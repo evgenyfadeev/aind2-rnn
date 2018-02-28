@@ -9,8 +9,18 @@ from keras.models import Sequential
 
 # TODO: fill out the function below that transforms the input series 
 # and window-size into a set of input/output pairs for use with our RNN model
-def window_transform_series(series, window_size):
-    return _window_transform_series(series, window_size, 1)
+def window_transform_series(series, window_size, step_size=1):
+    """We can use just one function to window the data
+    by using the step size parameter"""
+    idx = window_size
+    y = list()
+    x = list()
+    while idx < len(series):
+        y.append(series[idx])
+        x.append(series[idx-window_size:idx])
+        idx += step_size
+
+    return np.array(x), np.array(y)
 
 
 # TODO: build an RNN to perform regression on our time series input/output data
@@ -39,19 +49,7 @@ def cleaned_text(text):
         text = text.replace(char, ' ')
     return re.sub('\s+', ' ', text).strip()
 
-### TODO: fill out the function below that transforms the input text and window-size into a set of input/output pairs for use with our RNN model
-def _window_transform_series(series, window_size, step_size):
-    idx = window_size
-    y = list()
-    x = list()
-    while idx < len(series):
-        y.append(series[idx])
-        x.append(series[idx-window_size:idx])
-        idx += step_size
-
-    return np.array(x), np.array(y)
-
-window_transform_text = _window_transform_series
+window_transform_text = window_transform_series
 
 # TODO build the required RNN model: 
 # a single LSTM hidden layer with softmax activation, categorical_crossentropy loss 
