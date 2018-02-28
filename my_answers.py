@@ -16,8 +16,11 @@ def window_transform_series(series, window_size, step_size=1):
     y = list()
     x = list()
     while idx < len(series):
+        # append the last element following the window
         y.append(series[idx])
+        # append the elements of the window
         x.append(series[idx-window_size:idx])
+        # increment the window offset by the step size
         idx += step_size
 
     return np.array(x), np.array(y)
@@ -34,22 +37,35 @@ def build_part1_RNN(window_size):
 ### TODO: return the text input with only ascii lowercase and the punctuation given below included.
 def cleaned_text(text):
     punctuation = ['!', ',', '.', ':', ';', '?']
-    chars = set(list(text))
+    # get all chars in text
+    chars = set(text)
+    # replace individual accented chars
     text = text.replace('à', 'a')
     text = text.replace('â', 'a')
     text = text.replace('è', 'e')
     text = text.replace('é', 'e')
     for char in chars:
+        # keep letters
         if char in string.ascii_letters:
             continue
-        if char in string.digits:
-            continue
+        #if char in string.digits:
+        #    continue
+
+        # keep allowed punctuation chars
         if char in punctuation:
             continue
+
+        # all remaining chars replace with an empty space
         text = text.replace(char, ' ')
+
+    # replace repeating spaces with one at each position
     return re.sub('\s+', ' ', text).strip()
 
-window_transform_text = window_transform_series
+def window_transform_text(series, window_size, step_size):
+    # use the series transform function
+    x, y = window_transform_series(series, window_size, step_size)
+    # convert results to python lists
+    return x.tolist(), y.tolist()
 
 # TODO build the required RNN model: 
 # a single LSTM hidden layer with softmax activation, categorical_crossentropy loss 
